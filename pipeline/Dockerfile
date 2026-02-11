@@ -4,6 +4,7 @@ FROM python:3.13.11-slim
 # Copy the 'uv' binary from the specified image into the container
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/
 
+
 # Set the working directory inside the container
 WORKDIR /app
 
@@ -13,9 +14,11 @@ COPY .python-version pyproject.toml uv.lock ./
 # Install the dependencies using 'uv' with the locked versions
 RUN uv sync --locked
 
+# Add the virtual environment to PATH
+ENV PATH="/app/.venv/bin:$PATH"
 
 # Copy the pipeline script into the container
-COPY pipeline.py pipeline.py
+COPY ingest_zones.py .
 
 # Command to run the pipeline script when the container starts
-ENTRYPOINT ["uv", "run", "python", "pipeline.py"]    
+ENTRYPOINT ["python", "ingest_zones.py"]
